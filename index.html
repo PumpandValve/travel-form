@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Travel Application</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    overflow: hidden;
+  }
+
+  .header {
+    background: #1a3a5c;
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .header-left h1 {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2rem;
+  }
+
+  .header-left p {
+    color: #a8c4de;
+    font-size: 0.8rem;
+  }
+
+  .header-badge {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #dceeff;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .form-body {
+    padding: 2rem 2.5rem;
+  }
+
+  .policy-tip {
+    background: #eef6ff;
+    border-left: 3px solid #2a7de1;
+    border-radius: 0 6px 6px 0;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.78rem;
+    color: #1a4a80;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .policy-tip strong { font-weight: 600; }
+
+  .policy-tip.warn {
+    background: #fff8ea;
+    border-color: #e8a020;
+    color: #7a4a00;
+  }
+
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #2a7de1;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #e5eaf2;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem 1rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.75rem 1rem; }
+  .col-span-2 { grid-column: span 2; }
+  .col-span-3 { grid-column: span 3; }
+
+  .field { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #3a4a60;
+    letter-spacing: 0.01em;
+  }
+
+  label .req { color: #c0392b; margin-left: 2px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="date"],
+  input[type="number"],
+  select,
+  textarea {
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: #1a1a2e;
+    background: #f8fafd;
+    border: 1px solid #d0d8e8;
+    border-radius: 6px;
+    padding: 0.5rem 0.7rem;
+    width: 100%;
+    transition: border-color 0.15s, background 0.15s;
+    outline: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #2a7de1;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(42,125,225,0.12);
+  }
+
+  textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+  .radio-group {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .radio-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #f8fafd;
+    border: 1px solid #d0d8e8;
+    border-radius: 20px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #3a4a60;
+  }
+
+  .radio-pill input { display: none; }
+  .radio-pill:has(input:checked) {
+    background: #eef6ff;
+    border-color: #2a7de1;
+    color: #1a4a80;
+    font-weight: 600;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: #3a4a60;
+    cursor: pointer;
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #2a7de1;
+    cursor: pointer;
+  }
+
+  .section-block {
+    margin-bottom: 1.6rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #e5eaf2;
+    margin: 0 0 1.6rem;
+  }
+
+  .cost-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 0.75rem 1rem;
+    align-items: end;
+  }
+
+  .total-box {
+    background: #1a3a5c;
+    border-radius: 8px;
+    padding: 0.85rem 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+
+  .total-box span { color: #a8c4de; font-size: 0.82rem; }
+  .total-box strong { color: #fff; font-size: 1.15rem; font-weight: 700; }
+
+  .acknowledgement-box {
+    background: #f8fafd;
+    border: 1px solid #d0d8e8;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    font-size: 0.8rem;
+    color: #3a4a60;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5eaf2;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-secondary {
+    background: #f0f2f5;
+    color: #3a4a60;
+    border: 1px solid #d0d8e8;
+  }
+  .btn-secondary:hover { background: #e5eaf2; }
+
+  .btn-primary {
+    background: #2a7de1;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #1a6acf; }
+
+  .print-hint {
+    text-align: center;
+    font-size: 0.72rem;
+    color: #8a9ab5;
+    padding-top: 0.5rem;
+  }
+
+  .intl-section { display: none; }
+  .intl-section.visible { display: contents; }
+
+  @media (max-width: 640px) {
+    .form-body { padding: 1.25rem; }
+    .header { padding: 1.5rem 1.25rem; flex-direction: column; align-items: flex-start; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .col-span-2, .col-span-3 { grid-column: span 1; }
+    .cost-row { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; border-radius: 0; }
+    .btn, .footer-actions, .print-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Group Travel Application</h1>
+      <p>Pump &amp; Valve Specialties &nbsp;·&nbsp; A1 Pumps &amp; Motors &nbsp;·&nbsp; PV Composites Ltd</p>
+    </div>
+    <span class="header-badge">Requires Manager &amp; Director Approval</span>
+  </div>
+
+  <div class="form-body">
+
+    <!-- SECTION 1: Traveller Details -->
+    <div class="section-block">
+      <div class="section-label">Traveller details</div>
+      <div class="grid-3">
+        <div class="field col-span-2">
+          <label>Full name <span class="req">*</span></label>
+          <input type="text" placeholder="First and last name">
+        </div>
+        <div class="field">
+          <label>Date of birth <span class="req">*</span></label>
+          <input type="date">
+        </div>
+        <div class="field">
+          <label>Company entity <span class="req">*</span></label>
+          <select>
+            <option value="">Select entity</option>
+            <option>Pump &amp; Valve Specialties</option>
+            <option>A1 Pumps &amp; Motors</option>
+            <option>PV Composites Ltd</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Job title <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. Sales Representative">
+        </div>
+        <div class="field">
+          <label>Email address <span class="req">*</span></label>
+          <input type="email" placeholder="you@company.com">
+        </div>
+        <div class="field">
+          <label>Passport number</label>
+          <input type="text" placeholder="For international travel">
+        </div>
+        <div class="field">
+          <label>Passport expiry</label>
+          <input type="date">
+        </div>
+        <div class="field">
+          <label>Frequent flyer number</label>
+          <input type="text" placeholder="Optional – personal benefit">
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECTION 2: Travel Details -->
+    <div class="section-block">
+      <div class="section-label">Trip details</div>
+
+      <div class="policy-tip">
+        <strong>Policy:</strong> Travel must be booked at the earliest opportunity to manage costs. No more than 5 employees may travel on the same aircraft or vehicle without Director approval.
+      </div>
+
+      <div class="grid-3" style="margin-bottom:0.85rem">
+        <div class="field col-span-2">
+          <label>Purpose of travel <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. Customer meeting – Christchurch distributor review">
+        </div>
+        <div class="field">
+          <label>Number of travellers <span class="req">*</span></label>
+          <input type="number" min="1" max="99" placeholder="1" id="traveller-count" oninput="checkTravellers(this.value)">
+        </div>
+      </div>
+
+      <div id="traveller-warning" style="display:none" class="policy-tip warn" style="margin-bottom:0.85rem">
+        ⚠ <strong>5+ travellers on one booking</strong> — Director approval required before any booking is made.
+      </div>
+
+      <div style="margin-bottom:0.85rem">
+        <label style="display:block;margin-bottom:0.4rem">Trip type <span class="req">*</span></label>
+        <div class="radio-group">
+          <label class="radio-pill"><input type="radio" name="trip-type" value="domestic" onchange="setTripType('domestic')" checked> Domestic (NZ)</label>
+          <label class="radio-pill"><input type="radio" name="trip-type" value="tasman" onchange="setTripType('tasman')"> Trans-Tasman</label>
+          <label class="radio-pill"><input type="radio" name="trip-type" value="international" onchange="setTripType('international')"> International</label>
+        </div>
+      </div>
+
+      <div id="intl-notice" style="display:none" class="policy-tip warn">
+        ⚠ <strong>International travel requires Director approval</strong> before any booking is made. Submit this form at least 10 business days in advance.
+      </div>
+
+      <div class="grid-4">
+        <div class="field col-span-2">
+          <label>Destination city / country <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. Sydney, Australia">
+        </div>
+        <div class="field">
+          <label>Departure date <span class="req">*</span></label>
+          <input type="date" id="dep-date">
+        </div>
+        <div class="field">
+          <label>Return date <span class="req">*</span></label>
+          <input type="date" id="ret-date">
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECTION 3: Flights -->
+    <div class="section-block">
+      <div class="section-label">Flight requirements</div>
+
+      <div class="policy-tip">
+        <strong>Policy:</strong> Book the lowest available fare. Economy class is standard. Premium Economy requires Director approval and is only permitted for flights over 5 hours. Business Class requires Director approval. Airfares should not be booked on a company credit card where possible.
+      </div>
+
+      <div class="grid-3" style="margin-bottom:0.85rem">
+        <div class="field">
+          <label>Departing from <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. Auckland (AKL)">
+        </div>
+        <div class="field">
+          <label>Preferred departure time</label>
+          <select>
+            <option value="">No preference</option>
+            <option>Early morning (before 9am)</option>
+            <option>Morning (9am–12pm)</option>
+            <option>Afternoon (12pm–5pm)</option>
+            <option>Evening (after 5pm)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cabin class <span class="req">*</span></label>
+          <select id="cabin-class" onchange="checkCabin(this.value)">
+            <option value="economy">Economy</option>
+            <option value="premium">Premium Economy</option>
+            <option value="business">Business Class</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="business-notice" style="display:none" class="policy-tip warn">
+        ⚠ <strong id="cabin-warn-text">Director approval required</strong> — <span id="cabin-warn-detail">Premium Economy is only permitted for flights over 5 hours. Business Class requires Director approval regardless of flight duration.</span> Please provide justification below.
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Flexibility / preferred airline</label>
+          <input type="text" placeholder="e.g. Air NZ preferred, flexible dates ±1 day">
+        </div>
+        <div class="field">
+          <label>Return flight details</label>
+          <select>
+            <option>Return on stated date</option>
+            <option>Open-jaw / flexible return</option>
+            <option>One-way only</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECTION 4: Accommodation -->
+    <div class="section-block">
+      <div class="section-label">Accommodation</div>
+
+      <div class="policy-tip">
+        <strong>Policy:</strong> Maximum accommodation rate is <strong>$250 per room per night</strong> (NZD). Exceptions require Director approval. Book centrally located, business-appropriate hotels.
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label>Check-in date <span class="req">*</span></label>
+          <input type="date">
+        </div>
+        <div class="field">
+          <label>Check-out date <span class="req">*</span></label>
+          <input type="date">
+        </div>
+        <div class="field">
+          <label>Number of rooms</label>
+          <input type="number" min="1" value="1" placeholder="1">
+        </div>
+        <div class="field col-span-2">
+          <label>Preferred hotel / area</label>
+          <input type="text" placeholder="e.g. CBD preferred, near convention centre">
+        </div>
+        <div class="field">
+          <label>Rate exceeds $200/night?</label>
+          <select id="hotel-rate" onchange="checkHotelRate(this.value)">
+            <option value="no">No</option>
+            <option value="yes">Yes – approval needed ($250+ per night)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="hotel-rate-notice" style="display:none;margin-top:0.75rem" class="policy-tip warn">
+        ⚠ <strong>Rate exceeds $250/night policy limit</strong> — please provide justification and obtain Director approval before booking.
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECTION 5: Additional Requirements -->
+    <div class="section-block">
+      <div class="section-label">Additional requirements</div>
+
+      <div class="grid-2" style="margin-bottom:0.85rem">
+        <div class="field">
+          <label>Rental vehicle required?</label>
+          <div class="radio-group" style="margin-top:0.25rem">
+            <label class="radio-pill"><input type="radio" name="rental" value="no" checked> No</label>
+            <label class="radio-pill"><input type="radio" name="rental" value="yes" onchange="showRentalNote()"> Yes</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Vehicle type (if applicable)</label>
+          <select>
+            <option value="">N/A</option>
+            <option>Small car</option>
+            <option>Mid-size sedan</option>
+            <option>SUV / 4WD</option>
+            <option>Van / people mover</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="rental-note" style="display:none;margin-bottom:0.85rem" class="policy-tip">
+        <strong>Rental vehicles:</strong> Group insurance covers the rental excess — email vehicle details, hire dates, and sum insured to <strong>administration@pumpandvalve.com</strong> before travel.
+      </div>
+
+      <div class="policy-tip" style="margin-bottom:0.85rem">
+        <strong>Meals:</strong> Per-diem allowance is <strong>$100/day</strong> (NZD, incl. GST) for domestic travel. Receipts required for all expenses. Submit via expense claim form promptly after travel. Day trips without overnight stay — only actual costs reimbursed.
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Travel advance required?</label>
+          <div class="radio-group" style="margin-top:0.25rem">
+            <label class="radio-pill"><input type="radio" name="advance" value="no" checked> No</label>
+            <label class="radio-pill"><input type="radio" name="advance" value="yes"> Yes – discuss with manager</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Special requirements / notes</label>
+          <input type="text" placeholder="Dietary, accessibility, visa needs, etc.">
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECTION 6: Estimated Cost -->
+    <div class="section-block">
+      <div class="section-label">Estimated costs (NZD)</div>
+
+      <div class="cost-row">
+        <div class="field">
+          <label>Flights (total)</label>
+          <input type="number" placeholder="0.00" id="cost-flights" oninput="calcTotal()">
+        </div>
+        <div class="field">
+          <label>Accommodation (total)</label>
+          <input type="number" placeholder="0.00" id="cost-accom" oninput="calcTotal()">
+        </div>
+        <div class="field">
+          <label>Car rental</label>
+          <input type="number" placeholder="0.00" id="cost-car" oninput="calcTotal()">
+        </div>
+        <div class="field">
+          <label>Meals allowance</label>
+          <input type="number" placeholder="0.00" id="cost-meals" oninput="calcTotal()">
+        </div>
+        <div class="field">
+          <label>Other expenses</label>
+          <input type="number" placeholder="0.00" id="cost-other" oninput="calcTotal()">
+        </div>
+      </div>
+
+      <div class="total-box" style="margin-top:0.85rem">
+        <span>Estimated total trip cost</span>
+        <strong id="total-display">NZD $0.00</strong>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECTION 7: Justification -->
+    <div class="section-block">
+      <div class="section-label">Business justification</div>
+      <div class="field">
+        <label>Reason for travel &amp; expected business outcome <span class="req">*</span></label>
+        <textarea placeholder="Describe why this travel is necessary and the expected business benefit (customer relationship, new opportunity, project requirement, etc.)"></textarea>
+      </div>
+      <div class="field" style="margin-top:0.75rem" id="cabin-justify" style="display:none">
+        <label>Justification for cabin upgrade / rate exception</label>
+        <textarea placeholder="Provide reason if business class or hotel rate above $200/night was selected"></textarea>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECTION 8: Acknowledgement & Submission -->
+    <div class="section-block">
+      <div class="section-label">Declaration</div>
+
+      <div class="acknowledgement-box">
+        By submitting this form, I confirm that this travel is required for legitimate business purposes, that I have reviewed and will comply with the Group Travel Policy, that all estimated costs are reasonable and accurate to the best of my knowledge, and that I understand reimbursement of expenses requires receipts and an approved Expense Claim form submitted promptly after travel.
+      </div>
+
+      <label class="checkbox-row" style="margin-bottom:1.25rem">
+        <input type="checkbox" id="agree-check" onchange="toggleSubmit()">
+        I confirm the above declaration and that I have read the Group Travel Policy.
+      </label>
+
+      <div class="grid-3" style="margin-bottom:0.5rem">
+        <div class="field col-span-2">
+          <label>Employee signature / name <span class="req">*</span></label>
+          <input type="text" placeholder="Type full name as signature">
+        </div>
+        <div class="field">
+          <label>Date <span class="req">*</span></label>
+          <input type="date" id="sig-date">
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn btn-secondary" onclick="window.print()">🖨 Print / Save PDF</button>
+        <button class="btn btn-primary" id="submit-btn" disabled onclick="handleSubmit()">Submit for Approval →</button>
+      </div>
+
+      <p class="print-hint">Once submitted, this form will be posted to the FCO &amp; Directors approval channel in Microsoft Teams. &nbsp;·&nbsp; Based on Group Travel Policy V1 — May 2026.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ─────────────────────────────────────────────────────────────────
+  // STEP 1: Paste your Power Automate HTTP trigger URL below
+  // ─────────────────────────────────────────────────────────────────
+  const POWER_AUTOMATE_URL = 'https://defaultccaa6b6db74c44c5864f80c3eda355.e6.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7b64f36dc7d649539fbcca1a0b8099c7/triggers/manual/paths/invoke?api-version=1';
+  // ─────────────────────────────────────────────────────────────────
+
+  document.getElementById('sig-date').valueAsDate = new Date();
+
+  function setTripType(type) {
+    document.getElementById('intl-notice').style.display = (type === 'international') ? 'block' : 'none';
+  }
+
+  function checkTravellers(val) {
+    document.getElementById('traveller-warning').style.display = (parseInt(val) >= 5) ? 'block' : 'none';
+  }
+
+  function checkCabin(val) {
+    const show = val === 'business' || val === 'premium';
+    document.getElementById('business-notice').style.display = show ? 'block' : 'none';
+    document.getElementById('cabin-justify').style.display = show ? 'block' : 'none';
+  }
+
+  function showRentalNote() {
+    document.getElementById('rental-note').style.display = 'block';
+  }
+
+  function checkHotelRate(val) {
+    document.getElementById('hotel-rate-notice').style.display = val === 'yes' ? 'block' : 'none';
+  }
+
+  function calcTotal() {
+    const ids = ['cost-flights','cost-accom','cost-car','cost-meals','cost-other'];
+    const total = ids.reduce((sum, id) => {
+      const v = parseFloat(document.getElementById(id).value) || 0;
+      return sum + v;
+    }, 0);
+    document.getElementById('total-display').textContent = 'NZD $' + total.toLocaleString('en-NZ', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  function toggleSubmit() {
+    document.getElementById('submit-btn').disabled = !document.getElementById('agree-check').checked;
+  }
+
+  function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function getRadio(name) {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    return checked ? checked.value : '';
+  }
+
+  function collectFormData() {
+    const costs = ['cost-flights','cost-accom','cost-car','cost-meals','cost-other'];
+    const total = costs.reduce((s,id) => s + (parseFloat(getVal(id)) || 0), 0);
+    const tripTypeMap = { domestic: 'Domestic (NZ)', tasman: 'Trans-Tasman', international: 'International' };
+    const tripType = getRadio('trip-type');
+
+    return {
+      submittedAt: new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland' }),
+      traveller: {
+        name: getVal('traveller-name') || document.querySelector('input[placeholder="First and last name"]')?.value || '',
+        dob: document.querySelector('input[placeholder="First and last name"]')?.closest('.grid-3')?.querySelectorAll('input')[1]?.value || '',
+        entity: document.querySelector('select')?.value || '',
+        title: document.querySelector('input[placeholder="e.g. Sales Representative"]')?.value || '',
+        email: document.querySelector('input[type="email"]')?.value || '',
+        passport: document.querySelector('input[placeholder="For international travel"]')?.value || '',
+        passportExpiry: document.querySelectorAll('input[type="date"]')[1]?.value || '',
+        frequentFlyer: document.querySelector('input[placeholder="Optional – personal benefit"]')?.value || '',
+      },
+      trip: {
+        type: tripTypeMap[tripType] || tripType,
+        purpose: document.querySelector('input[placeholder="e.g. Customer meeting – Christchurch distributor review"]')?.value || '',
+        destination: document.querySelector('input[placeholder="e.g. Sydney, Australia"]')?.value || '',
+        departureDate: getVal('dep-date'),
+        returnDate: getVal('ret-date'),
+        travellerCount: document.getElementById('traveller-count')?.value || '1',
+      },
+      flights: {
+        departingFrom: document.querySelector('input[placeholder="e.g. Auckland (AKL)"]')?.value || '',
+        preferredTime: document.querySelectorAll('select')[1]?.value || '',
+        cabinClass: getVal('cabin-class'),
+        flexibility: document.querySelector('input[placeholder="e.g. Air NZ preferred, flexible dates ±1 day"]')?.value || '',
+        returnType: document.querySelectorAll('select')[2]?.value || '',
+      },
+      accommodation: {
+        checkIn: document.querySelectorAll('input[type="date"]')[2]?.value || '',
+        checkOut: document.querySelectorAll('input[type="date"]')[3]?.value || '',
+        rooms: document.querySelectorAll('input[type="number"]')[1]?.value || '1',
+        preference: document.querySelector('input[placeholder="e.g. CBD preferred, near convention centre"]')?.value || '',
+        rateExceedsPolicy: getVal('hotel-rate') === 'yes' ? 'Yes – approval needed' : 'No',
+      },
+      additional: {
+        rentalVehicle: getRadio('rental') === 'yes' ? 'Yes' : 'No',
+        vehicleType: document.querySelectorAll('select')[4]?.value || 'N/A',
+        travelAdvance: getRadio('advance') === 'yes' ? 'Yes' : 'No',
+        specialRequirements: document.querySelector('input[placeholder="Dietary, accessibility, visa needs, etc."]')?.value || '',
+      },
+      costs: {
+        flights: parseFloat(getVal('cost-flights')) || 0,
+        accommodation: parseFloat(getVal('cost-accom')) || 0,
+        carRental: parseFloat(getVal('cost-car')) || 0,
+        meals: parseFloat(getVal('cost-meals')) || 0,
+        other: parseFloat(getVal('cost-other')) || 0,
+        totalNZD: Math.round(total * 100) / 100,
+      },
+      justification: document.querySelector('textarea')?.value || '',
+      upgradeJustification: document.querySelectorAll('textarea')[1]?.value || '',
+      signedBy: document.querySelector('input[placeholder="Type full name as signature"]')?.value || '',
+      signedDate: getVal('sig-date'),
+    };
+  }
+
+  async function handleSubmit() {
+    if (!POWER_AUTOMATE_URL || POWER_AUTOMATE_URL === 'PASTE_YOUR_POWER_AUTOMATE_URL_HERE') {
+      alert('⚙️ Setup needed\n\nThe Power Automate webhook URL has not been configured yet.\n\nAsk your IT admin to follow the setup guide to complete the Teams integration.');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const data = collectFormData();
+
+    try {
+      const response = await fetch(POWER_AUTOMATE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok || response.status === 202) {
+        btn.textContent = '✓ Submitted';
+        btn.style.background = '#1a7a3a';
+        document.querySelector('.print-hint').textContent =
+          '✓ Your travel application has been sent to the FCO & Directors approval channel in Microsoft Teams.';
+        document.querySelector('.print-hint').style.color = '#1a7a3a';
+      } else {
+        throw new Error('HTTP ' + response.status);
+      }
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Submit for Approval →';
+      alert('Submission failed. Please check your internet connection and try again.\n\nError: ' + err.message);
+    }
+  }
+</script>
+
+</body>
+</html>
